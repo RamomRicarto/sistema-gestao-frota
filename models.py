@@ -1,13 +1,28 @@
 from enum import Enum
-from abc import ABC
+from abc import ABC, abstractmethod
+
+class AlocacaoInvalidaError(Exception):
+    pass
+
+class ManutencaoInvalidaError(Exception):
+    pass
 
 class StatusVeiculo(Enum):
     ATIVO = "Ativo"
     MANUTENCAO = "Em Manutenção"
     INATIVO = "Inativo"
 
+class ManutenivelMixin:
+    def registrar_manutencao(self):
+        if self.status != StatusVeiculo.ATIVO:
+             raise ManutencaoInvalidaError(f"Veículo já está {self.status.value}")
+        self.status = StatusVeiculo.MANUTENCAO
+    
+    def finalizar_manutencao(self):
+        if self.status == StatusVeiculo.MANUTENCAO:
+            self.status = StatusVeiculo.ATIVO
+
 class Pessoa:
-    """Entidade base representando uma pessoa física."""
     def __init__(self, nome: str, cpf: str):
         self.nome = nome
         self.__cpf = cpf
@@ -17,11 +32,9 @@ class Pessoa:
         return self.__cpf
 
     def to_dict(self):
-        """Converte dados básicos para dicionário."""
         return {"nome": self.nome, "cpf": self.cpf}
 
 class Motorista(Pessoa):
-    """Condutor habilitado responsável por realizar as viagens."""
     def __init__(self, nome: str, cpf: str, cnh: str, categoria_cnh: str):
         super().__init__(nome, cpf)
         self.__cnh = cnh
@@ -32,23 +45,29 @@ class Motorista(Pessoa):
         return self.__cnh
 
     def to_dict(self):
-        """Inclui dados da CNH no dicionário."""
         data = super().to_dict()
         data.update({"cnh": self.cnh, "categoria_cnh": self.categoria_cnh})
         return data
+    
+    @classmethod
+    def from_dict(cls, data):
+        return cls(data['nome'], data['cpf'], data['cnh'], data['categoria_cnh'])
 
     def __str__(self):
         return f"{self.nome} (CNH: {self.categoria_cnh})"
 
-class Veiculo(ABC):
-    """Base para veículos da frota."""
-    def __init__(self, placa: str, marca: str, modelo: str, ano: int, km_inicial: float = 0):
+class Veiculo(ABC, ManutenivelMixin):
+    def __init__(self, placa: str, marca: str, modelo: str, ano: int, km_inicial: float = 0, status: str = "Ativo"):
         self.placa = placa
         self.marca = marca
         self.modelo = modelo
         self.ano = ano
         self.__quilometragem = km_inicial
-        self.__status = StatusVeiculo.ATIVO
+
+        if isinstance(status, str):
+            self.__status = StatusVeiculo(status)
+        else:
+            self.__status = status
 
     @property
     def quilometragem(self) -> float:
@@ -69,9 +88,8 @@ class Veiculo(ABC):
         self.__status = novo_status
 
     def to_dict(self):
-        """Converte veículo para dicionário para salvar no JSON."""
         return {
-            "tipo": self.__class__.__name__, # Salva se é Carro, Moto ou Caminhao
+            "tipo": self.tipo,
             "placa": self.placa,
             "marca": self.marca,
             "modelo": self.modelo,
@@ -79,9 +97,29 @@ class Veiculo(ABC):
             "quilometragem": self.quilometragem,
             "status": self.status.value
         }
+    
+    @classmethod
+    def from_dict(cls, data):
+        """Recria o veículo correto com base no dicionário."""
+        tipo = data.get('tipo')
+        status = data.get('status', 'Ativo')
+        
+        if tipo == "Carro":
+            classe = Carro
+        elif tipo == "Moto":
+            classe = Moto
+        elif tipo == "Caminhão":
+            classe = Caminhao
+        else:
+            classe = Carro
+            
+        return classe(
+            data['placa'], data['marca'], data['modelo'], 
+            data['ano'], data['quilometragem'], status
+        )
 
     def __str__(self):
-        return f"[{self.placa}] {self.marca} {self.modelo} - {self.status.value}"
+        return f"[{self.placa}] {self.modelo} - {self.status.value}"
 
 class Carro(Veiculo):
     tipo = "Carro"
@@ -96,28 +134,31 @@ class Caminhao(Veiculo):
     categoria_minima_cnh = "C"
 
 class Viagem:
-    """
-    Classe de Relacionamento: Vincula um Motorista a um Veículo.
-    """
     def __init__(self, motorista: Motorista, veiculo: Veiculo, destino: str, distancia: float):
         self.motorista = motorista
         self.veiculo = veiculo
         self.destino = destino
         self.distancia = distancia
+        
+        self._validar_alocacao()
+
+    def _validar_alocacao(self):
+        if self.veiculo.status != StatusVeiculo.ATIVO:
+            raise AlocacaoInvalidaError(f"Veículo {self.veiculo.placa} está {self.veiculo.status.value}")
+
+        if self.veiculo.categoria_minima_cnh not in self.motorista.categoria_cnh:
+            raise AlocacaoInvalidaError(
+                f"Motorista CNH {self.motorista.categoria_cnh} não pode dirigir {self.veiculo.tipo} (Req: {self.veiculo.categoria_minima_cnh})"
+            )
 
     def realizar_viagem(self):
-        """Atualiza a quilometragem do veículo ao fechar a viagem."""
         nova_km = self.veiculo.quilometragem + self.distancia
         self.veiculo.quilometragem = nova_km
 
     def to_dict(self):
-        """Salva o relacionamento (apenas identificadores principais)."""
         return {
             "cpf_motorista": self.motorista.cpf,
             "placa_veiculo": self.veiculo.placa,
             "destino": self.destino,
             "distancia": self.distancia
         }
-    
-    def __str__(self):
-        return f"Viagem para {self.destino} ({self.distancia}km) | Condutor: {self.motorista.nome} -> Veículo: {self.veiculo.modelo}"

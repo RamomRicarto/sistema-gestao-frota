@@ -1,0 +1,10 @@
+{
+    "regras_cnh": {
+        "Moto": "A",
+        "Carro": "B",
+        "Caminhão": "C"
+    },
+    "manutencao": {
+        "intervalo_km": 10000
+    }
+}

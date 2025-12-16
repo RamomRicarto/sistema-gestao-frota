@@ -203,17 +203,21 @@ def gerar_relatorio_custos():
     return relatorio
 
 def gerar_relatorio_eficiencia():
-    """Retorna eficiência (km/l) estimada e ordena (Ranking)."""
+    """
+    Retorna eficiência (km/l) estimada e ordena (Ranking).
+    CORREÇÃO IMPORTANTE: Usa (KM Atual - KM Entrada) / Litros Totais.
+    """
     veiculos = carregar_veiculos()
     relatorio = []
     
     for v in veiculos:
         total_litros = sum(a.litros for a in v.historico_abastecimentos)
         
-        km_considerado = v.quilometragem 
+        km_inicial_real = getattr(v, 'km_entrada', 0)
+        distancia_percorrida = v.quilometragem - km_inicial_real
         
-        if total_litros > 0:
-            km_l = km_considerado / total_litros
+        if total_litros > 0 and distancia_percorrida > 0:
+            km_l = distancia_percorrida / total_litros
         else:
             km_l = 0.0
             

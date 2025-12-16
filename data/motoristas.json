@@ -7,8 +7,14 @@
     },
     {
         "nome": "ramom",
-        "cpf": "0930039103",
+        "cpf": "09466265377",
         "cnh": "987",
         "categoria_cnh": "C"
+    },
+    {
+        "nome": "",
+        "cpf": "",
+        "cnh": "",
+        "categoria_cnh": ""
     }
 ]

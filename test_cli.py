@@ -95,16 +95,17 @@ def test_fluxo_manutencao_completo_strategy():
     assert veiculo.status == StatusVeiculo.ATIVO
 
 def test_registro_abastecimento_e_eficiencia():
-    """Testa registrar abastecimento e verificar cálculo de eficiência."""
+    """Testa registrar abastecimento, realizar viagem e verificar cálculo de eficiência."""
+
     controller.cadastrar_veiculo_controller("Carro", "ECO-01", "Fiat", "Mobi", "2023", "1000")
-    
+    controller.cadastrar_motorista_controller("Motorista Teste", "123.456.789-00", "12345", "B")
+    controller.realizar_viagem_controller("123.456.789-00", "ECO-01", "Teste", "1000")
     controller.registrar_abastecimento_controller("ECO-01", "01/01/2025", "Gasolina", "50", "250")
     
     relatorio = controller.gerar_relatorio_eficiencia()
-    
     dados_carro = next(d for d in relatorio if d['placa'] == "ECO-01")
+    
     assert dados_carro['km_l'] == 20.0
-
 
 def test_geracao_relatorios_nao_quebra():
     """Garante que chamar os relatórios sem dados ou com dados não gera erro."""

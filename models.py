@@ -17,27 +17,22 @@ class StatusVeiculo(Enum):
     INATIVO = "Inativo"
 
 class EstrategiaManutencao(ABC):
-    """
-    Interface Strategy para definir como o custo da manutenção é calculado.
-    """
     @abstractmethod
     def calcular_custo(self, valor_base: float) -> float:
         pass
 
 class ManutencaoBasica(EstrategiaManutencao):
-    """Estratégia para manutenções preventivas (sem taxa extra)."""
     def calcular_custo(self, valor_base: float) -> float:
         return valor_base
 
 class ManutencaoCorretiva(EstrategiaManutencao):
-    """Estratégia para manutenções corretivas (taxa de urgência/peças)."""
     def calcular_custo(self, valor_base: float) -> float:
         return valor_base * 1.20
 
 class Manutencao:
     def __init__(self, data: str, tipo: str, custo_base: float, descricao: str):
         self.data = data
-        self.tipo = tipo  
+        self.tipo = tipo
         self.descricao = descricao
         self.custo_base = float(custo_base)
         
@@ -73,7 +68,6 @@ class Abastecimento:
         }
 
 class ManutenivelMixin:
-    """Adiciona capacidades de registrar manutenção e controlar status."""
     def registrar_manutencao_status(self):
         if self.status != StatusVeiculo.ATIVO:
              raise ManutencaoInvalidaError(f"Veículo já está {self.status.value}")
@@ -83,10 +77,9 @@ class ManutenivelMixin:
         if self.status == StatusVeiculo.MANUTENCAO:
             self.status = StatusVeiculo.ATIVO
         else:
-            raise ManutencaoInvalidaError("Veículo não está em manutenção para ser liberado.")
+            raise ManutencaoInvalidaError("Veículo não está em manutenção.")
 
 class AbastecivelMixin:
-    """Adiciona capacidades de registro de abastecimento."""
     def abastecer(self, abastecimento: Abastecimento):
         self.historico_abastecimentos.append(abastecimento)
 
@@ -126,7 +119,9 @@ class Veiculo(ABC, ManutenivelMixin, AbastecivelMixin):
         self.marca = marca
         self.modelo = modelo
         self.ano = int(ano)
+        
         self.__quilometragem = float(km_inicial)
+        self.km_entrada = float(km_inicial) 
         
         self.historico_manutencoes: List[Manutencao] = []
         self.historico_abastecimentos: List[Abastecimento] = []
@@ -155,18 +150,14 @@ class Veiculo(ABC, ManutenivelMixin, AbastecivelMixin):
         self.__status = novo_status
 
     def adicionar_manutencao(self, manutencao: Manutencao):
-        """Registra a manutenção no histórico e altera o status."""
         self.registrar_manutencao_status()
         self.historico_manutencoes.append(manutencao)
 
     def __lt__(self, other):
-        """Permite ordenar veículos por quilometragem (v1 < v2)."""
-        if not isinstance(other, Veiculo):
-            return NotImplemented
+        if not isinstance(other, Veiculo): return NotImplemented
         return self.quilometragem < other.quilometragem
 
     def __iter__(self):
-        """Permite iterar diretamente sobre o histórico de manutenções."""
         return iter(self.historico_manutencoes)
 
     def __str__(self):
@@ -180,6 +171,7 @@ class Veiculo(ABC, ManutenivelMixin, AbastecivelMixin):
             "modelo": self.modelo,
             "ano": self.ano,
             "quilometragem": self.quilometragem,
+            "km_entrada": self.km_entrada,
             "status": self.status.value,
             "manutencoes": [m.to_dict() for m in self.historico_manutencoes],
             "abastecimentos": [a.to_dict() for a in self.historico_abastecimentos]
@@ -199,6 +191,8 @@ class Veiculo(ABC, ManutenivelMixin, AbastecivelMixin):
             data['placa'], data['marca'], data['modelo'], 
             data['ano'], data['quilometragem'], status
         )
+        
+        veiculo.km_entrada = data.get('km_entrada', veiculo.quilometragem)
         
         for m in data.get('manutencoes', []):
             manut = Manutencao(m['data'], m['tipo'], m['custo_base'], m.get('descricao', ''))
@@ -244,9 +238,7 @@ class Viagem:
         if req == "C" and any(cat in cnh_mot for cat in ["D", "E"]): compativel = True
 
         if not compativel:
-            raise AlocacaoInvalidaError(
-                f"Motorista CNH {cnh_mot} não pode dirigir {self.veiculo.tipo} (Requer: {req})"
-            )
+            raise AlocacaoInvalidaError(f"CNH {cnh_mot} incompatível com {self.veiculo.tipo} (Req: {req})")
 
     def realizar_viagem(self):
         nova_km = self.veiculo.quilometragem + self.distancia

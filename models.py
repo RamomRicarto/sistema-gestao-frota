@@ -144,16 +144,36 @@ class Viagem:
 
     def _validar_alocacao(self):
         if self.veiculo.status != StatusVeiculo.ATIVO:
-            raise AlocacaoInvalidaError(f"Veículo {self.veiculo.placa} está {self.veiculo.status.value}")
-
-        if self.veiculo.categoria_minima_cnh not in self.motorista.categoria_cnh:
             raise AlocacaoInvalidaError(
-                f"Motorista CNH {self.motorista.categoria_cnh} não pode dirigir {self.veiculo.tipo} (Req: {self.veiculo.categoria_minima_cnh})"
+                f"Veículo {self.veiculo.placa} está {self.veiculo.status.value}"
+            )
+
+        req_veiculo = self.veiculo.categoria_minima_cnh
+        cnh_motorista = self.motorista.categoria_cnh
+
+        regras_permitidas = {
+            'A': ['A'],                # A só dirige A
+            'B': ['B'],                # Min B -> aceita B
+            'C': ['B', 'C'],           # Min C -> aceita B ou C
+            'D': ['B', 'C', 'D'],      # Min D -> aceita B, C ou D
+            'E': ['B', 'C', 'D', 'E']  # Min E -> aceita B, C, D ou E
+        }
+
+        letras_aceitas = regras_permitidas.get(req_veiculo, [])
+
+        tem_permissao = any(letra in cnh_motorista for letra in letras_aceitas)
+
+        if not tem_permissao:
+            raise AlocacaoInvalidaError(
+                f"Motorista CNH {cnh_motorista} não pode dirigir {self.veiculo.tipo}. "
+                f"O veículo exige categoria '{req_veiculo}', que nesta regra aceita CNHs contendo: {letras_aceitas}"
             )
 
     def realizar_viagem(self):
+        """Atualiza a quilometragem do veículo somando a distância da viagem."""
         nova_km = self.veiculo.quilometragem + self.distancia
         self.veiculo.quilometragem = nova_km
+        print(f"Viagem para {self.destino} finalizada. Nova KM do veículo: {self.veiculo.quilometragem}")
 
     def to_dict(self):
         return {
@@ -162,3 +182,6 @@ class Viagem:
             "destino": self.destino,
             "distancia": self.distancia
         }
+
+    def __str__(self):
+        return f"Viagem de {self.motorista.nome} para {self.destino} com {self.veiculo.modelo}"

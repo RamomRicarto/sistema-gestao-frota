@@ -1,0 +1,105 @@
+[
+    {
+        "tipo": "Carro",
+        "placa": "1bc-123",
+        "marca": "fiat",
+        "modelo": "uno",
+        "ano": 2010,
+        "quilometragem": 120000.0,
+        "km_entrada": 110000.0,
+        "status": "Ativo",
+        "manutencoes": [
+            {
+                "data": "15/12/2025",
+                "tipo": "preventiva",
+                "custo_base": 1000.0,
+                "custo_final": 1000.0,
+                "descricao": "manutenção realizada"
+            },
+            {
+                "data": "16/12/2025",
+                "tipo": "corretiva",
+                "custo_base": 1000.0,
+                "custo_final": 1200.0,
+                "descricao": "problema no pneu"
+            }
+        ],
+        "abastecimentos": [
+            {
+                "data": "15/12/2005",
+                "combustivel": "gasolina",
+                "litros": 10.0,
+                "valor": 50.0
+            }
+        ]
+    },
+    {
+        "tipo": "Moto",
+        "placa": "ram-1234",
+        "marca": "honda",
+        "modelo": "red",
+        "ano": 2015,
+        "quilometragem": 0.0,
+        "km_entrada": 0.0,
+        "status": "Ativo",
+        "manutencoes": [],
+        "abastecimentos": []
+    },
+    {
+        "tipo": "Carro",
+        "placa": "abc-12345",
+        "marca": "fiat",
+        "modelo": "uno",
+        "ano": 2025,
+        "quilometragem": 80000.0,
+        "km_entrada": 50000.0,
+        "status": "Ativo",
+        "manutencoes": [],
+        "abastecimentos": [
+            {
+                "data": "17/12/2025",
+                "combustivel": "5000",
+                "litros": 3000.0,
+                "valor": 100.0
+            }
+        ]
+    },
+    {
+        "tipo": "Carro",
+        "placa": "111-222",
+        "marca": "fiat",
+        "modelo": "uno",
+        "ano": 2010,
+        "quilometragem": 290000.0,
+        "km_entrada": 50000.0,
+        "status": "Ativo",
+        "manutencoes": [],
+        "abastecimentos": [
+            {
+                "data": "17/12/2025",
+                "combustivel": "1000",
+                "litros": 1000.0,
+                "valor": 100.0
+            }
+        ]
+    },
+    {
+        "tipo": "Carro",
+        "placa": "222-111",
+        "marca": "fiat",
+        "modelo": "uno",
+        "ano": 2010,
+        "quilometragem": 20000.0,
+        "km_entrada": 20000.0,
+        "status": "Ativo",
+        "manutencoes": [],
+        "abastecimentos": [
+            {
+                "data": "17/12/2025",
+                "combustivel": "gasolina",
+                "litros": 1000.0,
+                "valor": 100.0
+            }
+        ]
+    }
+]

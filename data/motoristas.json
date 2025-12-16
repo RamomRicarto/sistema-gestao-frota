@@ -1,0 +1,20 @@
+[
+    {
+        "nome": "ramom",
+        "cpf": "049945894584",
+        "cnh": "52625",
+        "categoria_cnh": "AB"
+    },
+    {
+        "nome": "ramom",
+        "cpf": "09466265377",
+        "cnh": "987",
+        "categoria_cnh": "C"
+    },
+    {
+        "nome": "",
+        "cpf": "",
+        "cnh": "",
+        "categoria_cnh": ""
+    }
+]

@@ -1,0 +1,66 @@
+[
+    {
+        "cpf_motorista": "0930039103",
+        "nome_motorista": "ramom",
+        "placa_veiculo": "1bc-123",
+        "modelo_veiculo": "uno",
+        "destino": "fortaleza",
+        "distancia": 10000.0
+    },
+    {
+        "cpf_motorista": "09466265377",
+        "nome_motorista": "ramom",
+        "placa_veiculo": "1bc-123",
+        "modelo_veiculo": "uno",
+        "destino": "fortaleza",
+        "distancia": 100000.0
+    },
+    {
+        "cpf_motorista": "09466265377",
+        "nome_motorista": "ramom",
+        "placa_veiculo": "abc-12345",
+        "modelo_veiculo": "uno",
+        "destino": "fortal",
+        "distancia": 30000.0
+    },
+    {
+        "cpf_motorista": "09466265377",
+        "nome_motorista": "ramom",
+        "placa_veiculo": "111-222",
+        "modelo_veiculo": "uno",
+        "destino": "sp",
+        "distancia": 10000.0
+    },
+    {
+        "cpf_motorista": "09466265377",
+        "nome_motorista": "ramom",
+        "placa_veiculo": "1bc-123",
+        "modelo_veiculo": "uno",
+        "destino": "fortal",
+        "distancia": 10000.0
+    },
+    {
+        "cpf_motorista": "09466265377",
+        "nome_motorista": "ramom",
+        "placa_veiculo": "111-222",
+        "modelo_veiculo": "uno",
+        "destino": "sp",
+        "distancia": 10000.0
+    },
+    {
+        "cpf_motorista": "09466265377",
+        "nome_motorista": "ramom",
+        "placa_veiculo": "111-222",
+        "modelo_veiculo": "uno",
+        "destino": "fortal",
+        "distancia": 20000.0
+    },
+    {
+        "cpf_motorista": "09466265377",
+        "nome_motorista": "ramom",
+        "placa_veiculo": "111-222",
+        "modelo_veiculo": "uno",
+        "destino": "sp",
+        "distancia": 200000.0
+    }
+]
